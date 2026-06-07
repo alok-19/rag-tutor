@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 import chromadb
-from study_rag.config import DB_PATH, COLLECTION_NAME
+from rag_tutor.config import DB_PATH, COLLECTION_NAME
 
 @dataclass
 class RetrievedSource:

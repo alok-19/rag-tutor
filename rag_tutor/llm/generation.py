@@ -1,8 +1,8 @@
 import time
 from typing import Generator, Callable, Tuple
 from dataclasses import dataclass
-from study_rag.config import PRIMARY_GENERATION_MODEL, FALLBACK_GENERATION_MODEL
-from study_rag.llm.gemini_client import get_genai_client
+from rag_tutor.config import PRIMARY_GENERATION_MODEL, FALLBACK_GENERATION_MODEL
+from rag_tutor.llm.gemini_client import get_genai_client
 
 @dataclass
 class ChatResponse:

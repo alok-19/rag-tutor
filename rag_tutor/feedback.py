@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 from datetime import datetime, timezone
-from study_rag.config import DB_PATH
+from rag_tutor.config import DB_PATH
 
 FEEDBACK_FILE = DB_PATH / "feedback.jsonl"
 

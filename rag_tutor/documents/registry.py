@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from study_rag.config import REGISTRY_FILE
+from rag_tutor.config import REGISTRY_FILE
 
 def load_registry(registry_path: Path = REGISTRY_FILE) -> dict:
     """Load the registry of already ingested files.

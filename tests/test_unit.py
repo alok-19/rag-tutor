@@ -3,14 +3,14 @@ import json
 from pathlib import Path
 import pytest
 
-from study_rag.documents.hashing import calculate_file_hash
-from study_rag.documents.registry import load_registry, save_registry, migrate_legacy_registry
-from study_rag.documents.chunking import chunk_pages
-from study_rag.documents.pdf_loader import DocumentPage
-from study_rag.retrieval.query_expansion import expand_query
-from study_rag.retrieval.prompts import construct_rag_prompt
-from study_rag.retrieval.memory import build_chat_history, disambiguate_query
-from study_rag.feedback import save_feedback, get_feedback_stats
+from rag_tutor.documents.hashing import calculate_file_hash
+from rag_tutor.documents.registry import load_registry, save_registry, migrate_legacy_registry
+from rag_tutor.documents.chunking import chunk_pages
+from rag_tutor.documents.pdf_loader import DocumentPage
+from rag_tutor.retrieval.query_expansion import expand_query
+from rag_tutor.retrieval.prompts import construct_rag_prompt
+from rag_tutor.retrieval.memory import build_chat_history, disambiguate_query
+from rag_tutor.feedback import save_feedback, get_feedback_stats
 
 def test_file_hashing():
     """Verify SHA256 hashing utility produces correct hashes."""
@@ -188,7 +188,7 @@ def test_disambiguate_follow_up_query():
 def test_feedback_save_and_stats():
     """Verify feedback can be saved and statistics retrieved."""
     import tempfile
-    from study_rag.feedback import FEEDBACK_FILE
+    from rag_tutor.feedback import FEEDBACK_FILE
     
     with tempfile.TemporaryDirectory() as tmpdir:
         # Monkeypatch feedback file for isolation

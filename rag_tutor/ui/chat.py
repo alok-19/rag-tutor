@@ -1,7 +1,7 @@
 import streamlit as st
-from study_rag.retrieval import has_subject_documents, retrieve_context_with_memory, build_chat_history, construct_rag_prompt
-from study_rag.llm import generate_response_stream
-from study_rag.feedback import save_feedback
+from rag_tutor.retrieval import has_subject_documents, retrieve_context_with_memory, build_chat_history, construct_rag_prompt
+from rag_tutor.llm import generate_response_stream
+from rag_tutor.feedback import save_feedback
 
 def render_citations(sources: list[dict]):
     """Renders the sources panel beneath a chat message."""

@@ -3,14 +3,14 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "study-rag"
+name = "rag-tutor"
 version = "1.0.0"
 description = "An interactive, AI-powered Retrieval-Augmented Generation (RAG) study assistant."
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [
-    {name = "Study RAG Team"}
+    {name = "RAG Tutor Team"}
 ]
 keywords = ["rag", "study", "assistant", "gemini", "chromadb"]
 classifiers = [
@@ -40,7 +40,7 @@ dev = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["study_rag*"]
+include = [    "rag_tutor*"]
 exclude = ["tests*", "venv*", "chroma_db*"]
 
 [tool.pytest.ini_options]

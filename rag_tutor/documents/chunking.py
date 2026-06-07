@@ -1,5 +1,5 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from study_rag.documents.pdf_loader import DocumentPage
+from rag_tutor.documents.pdf_loader import DocumentPage
 
 def chunk_pages(
     pages: list[DocumentPage],

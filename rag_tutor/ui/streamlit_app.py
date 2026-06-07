@@ -1,7 +1,7 @@
 import streamlit as st
-from study_rag.ui.styles import inject_styles
-from study_rag.ui.sidebar import render_sidebar
-from study_rag.ui.chat import render_chat_interface
+from rag_tutor.ui.styles import inject_styles
+from rag_tutor.ui.sidebar import render_sidebar
+from rag_tutor.ui.chat import render_chat_interface
 
 def main():
     # Streamlit requires set_page_config to be called first

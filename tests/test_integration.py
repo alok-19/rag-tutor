@@ -4,10 +4,10 @@ from pathlib import Path
 from unittest.mock import patch
 import pytest
 
-from study_rag.documents import DocumentPage
-from study_rag.ingestion import ingest_pdfs
-from study_rag.retrieval import retrieve_context
-from study_rag.retrieval.vector_store import get_collection, has_subject_documents
+from rag_tutor.documents import DocumentPage
+from rag_tutor.ingestion import ingest_pdfs
+from rag_tutor.retrieval import retrieve_context
+from rag_tutor.retrieval.vector_store import get_collection, has_subject_documents
 
 @pytest.fixture
 def temp_dirs():
@@ -19,8 +19,8 @@ def temp_dirs():
     shutil.rmtree(db_dir)
     shutil.rmtree(materials_dir)
 
-@patch("study_rag.ingestion.service.extract_pages_from_pdf")
-@patch("study_rag.ingestion.service.get_embeddings_batch")
+@patch("rag_tutor.ingestion.service.extract_pages_from_pdf")
+@patch("rag_tutor.ingestion.service.get_embeddings_batch")
 def test_ingestion_and_retrieval_flow(mock_embeds, mock_extract, temp_dirs):
     db_dir, materials_dir = temp_dirs
     registry_file = db_dir / "ingestion_registry.json"
@@ -92,9 +92,9 @@ def test_ingestion_and_retrieval_flow(mock_embeds, mock_extract, temp_dirs):
     assert "UDP is a connectionless transport protocol." not in all_docs["documents"]
 
 
-@patch("study_rag.retrieval.rag_service.get_embedding")
-@patch("study_rag.ingestion.service.extract_pages_from_pdf")
-@patch("study_rag.ingestion.service.get_embeddings_batch")
+@patch("rag_tutor.retrieval.rag_service.get_embedding")
+@patch("rag_tutor.ingestion.service.extract_pages_from_pdf")
+@patch("rag_tutor.ingestion.service.get_embeddings_batch")
 def test_subject_isolated_retrieval(mock_embeds, mock_extract, mock_get_embedding, temp_dirs):
     db_dir, materials_dir = temp_dirs
     registry_file = db_dir / "ingestion_registry.json"

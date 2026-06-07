@@ -1,7 +1,7 @@
-from study_rag.llm.embeddings import get_embedding
-from study_rag.retrieval.query_expansion import expand_query
-from study_rag.retrieval.vector_store import query_vector_store, RetrievedSource
-from study_rag.config import DB_PATH, COLLECTION_NAME
+from rag_tutor.llm.embeddings import get_embedding
+from rag_tutor.retrieval.query_expansion import expand_query
+from rag_tutor.retrieval.vector_store import query_vector_store, RetrievedSource
+from rag_tutor.config import DB_PATH, COLLECTION_NAME
 from pathlib import Path
 
 def build_chat_history(messages: list[dict], max_turns: int = 3) -> str:

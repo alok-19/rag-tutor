@@ -1,6 +1,6 @@
 from pathlib import Path
-from study_rag.config import DB_PATH, COLLECTION_NAME, REGISTRY_FILE
-from study_rag.documents import (
+from rag_tutor.config import DB_PATH, COLLECTION_NAME, REGISTRY_FILE
+from rag_tutor.documents import (
     calculate_file_hash,
     load_registry,
     save_registry,
@@ -8,8 +8,8 @@ from study_rag.documents import (
     extract_pages_from_pdf,
     chunk_pages
 )
-from study_rag.llm.embeddings import get_embeddings_batch
-from study_rag.retrieval.vector_store import delete_source_documents, add_documents_to_store
+from rag_tutor.llm.embeddings import get_embeddings_batch
+from rag_tutor.retrieval.vector_store import delete_source_documents, add_documents_to_store
 
 def ingest_pdfs(
     pdf_dir: Path,

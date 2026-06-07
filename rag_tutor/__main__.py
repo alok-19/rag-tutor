@@ -9,7 +9,7 @@ def run_ui():
     except ImportError as e:
         print(f"Error: {e}")
         print("Please ensure you are running Python from your virtual environment.")
-        print("Try running: ./venv/bin/python -m study_rag run")
+        print("Try running: ./venv/bin/python -m rag_tutor run")
         sys.exit(1)
         
     current_dir = Path(__file__).parent
@@ -21,8 +21,8 @@ def run_ui():
 
 def run_ingest(subject_name: str):
     """Executes the document ingestion CLI pipeline."""
-    from study_rag.config import STUDY_DIR
-    from study_rag.ingestion import ingest_pdfs
+    from rag_tutor.config import STUDY_DIR
+    from rag_tutor.ingestion import ingest_pdfs
     
     pdf_directory = STUDY_DIR / subject_name
     pdf_directory.mkdir(parents=True, exist_ok=True)
@@ -36,7 +36,7 @@ def run_ingest(subject_name: str):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Study RAG Assistant CLI"
+        description="RAG Tutor CLI"
     )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
     

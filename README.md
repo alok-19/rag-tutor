@@ -1,6 +1,6 @@
-# Study RAG Assistant 🎓
+# RAG Tutor 🎓
 
-An interactive, AI-powered Retrieval-Augmented Generation (RAG) study assistant. The application indexes PDF textbooks using **semantic chunking**, generates high-quality embeddings via the Gemini API, stores them locally in a Chroma DB vector database, and lets you ask questions via a web chat interface with **conversational memory** and **feedback tracking**.
+A personal RAG tutor for your study materials. The application indexes PDF textbooks using **semantic chunking**, generates high-quality embeddings via the Gemini API, stores them locally in a Chroma DB vector database, and lets you ask questions via a web chat interface with **conversational memory** and **feedback tracking**.
 
 This application is modularized, fully tested, and supports multiple subjects.
 
@@ -8,7 +8,7 @@ This application is modularized, fully tested, and supports multiple subjects.
 
 ## Project Structure
 
-- **`study_rag/`**: Core application package:
+- **`rag_tutor/`**: Core application package:
   - **`__main__.py`**: Unified entrypoint CLI to run commands (`run`, `ingest`).
   - **`config.py`**: Configuration constants and environment variable loaders.
   - **`documents/`**: PDF loaders (PyMuPDF), **semantic text chunking**, document models, and file-hashing registry trackers.
@@ -62,7 +62,7 @@ You can ingest textbook PDFs in one of two ways:
 
 - **Via Command Line**:
   ```bash
-  python -m study_rag ingest --subject "Operating System"
+  python -m rag_tutor ingest --subject "Operating System"
   ```
 - **Via the Streamlit UI**:
   Start the app, select or create your subject, upload documents in the sidebar, and click **"🚀 Ingest / Update Subject"**.
@@ -73,7 +73,7 @@ You can ingest textbook PDFs in one of two ways:
 
 Start the web application:
 ```bash
-python -m study_rag run
+python -m rag_tutor run
 ```
 
 ---

@@ -2,9 +2,9 @@ import os
 import shutil
 from pathlib import Path
 import streamlit as st
-from study_rag.config import STUDY_DIR
-from study_rag.documents import load_registry
-from study_rag.ingestion import ingest_pdfs
+from rag_tutor.config import STUDY_DIR
+from rag_tutor.documents import load_registry
+from rag_tutor.ingestion import ingest_pdfs
 
 def get_subjects() -> list[str]:
     """Retrieve list of subjects from the study materials directory."""

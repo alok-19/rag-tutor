@@ -1,1 +1,0 @@
-# Study RAG package initialization

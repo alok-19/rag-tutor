@@ -2,8 +2,8 @@ import time
 import random
 from google.genai.errors import APIError
 from google.genai import types
-from study_rag.config import EMBEDDING_MODEL
-from study_rag.llm.gemini_client import get_genai_client
+from rag_tutor.config import EMBEDDING_MODEL
+from rag_tutor.llm.gemini_client import get_genai_client
 
 def get_embeddings_batch(texts: list[str], api_key: str = None) -> list[list[float]]:
     """Get embeddings for a list of texts using Gemini API in batches with backoff retry."""
