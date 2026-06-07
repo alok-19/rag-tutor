@@ -9,6 +9,7 @@ from .vector_store import (
 )
 from .rag_service import retrieve_context
 from .memory import build_chat_history, disambiguate_query, retrieve_context_with_memory
+from .reranker import BgeReranker, rerank_enabled, RerankerUnavailableError
 
 __all__ = [
     "expand_query",
@@ -22,4 +23,7 @@ __all__ = [
     "build_chat_history",
     "disambiguate_query",
     "retrieve_context_with_memory",
+    "BgeReranker",
+    "rerank_enabled",
+    "RerankerUnavailableError",
 ]

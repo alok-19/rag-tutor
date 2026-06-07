@@ -4,12 +4,24 @@ from rag_tutor.llm.providers.gemini import GeminiProvider
 from rag_tutor.llm.providers.openai import OpenAIProvider
 from rag_tutor.llm.providers.deepseek import DeepSeekProvider
 
+# Local-first: imported lazily so users without [hybrid] extras
+# can still import the package.
+try:
+    from rag_tutor.llm.providers.bge import BgeM3Provider
+
+    _HAS_BGE = True
+except Exception:
+    BgeM3Provider = None  # type: ignore
+    _HAS_BGE = False
+
 # Registry of all providers
 _PROVIDER_REGISTRY: dict[str, type[LLMProvider]] = {
     "gemini": GeminiProvider,
     "openai": OpenAIProvider,
     "deepseek": DeepSeekProvider,
 }
+if _HAS_BGE and BgeM3Provider is not None:
+    _PROVIDER_REGISTRY["bge"] = BgeM3Provider
 
 
 def list_providers() -> list[str]:

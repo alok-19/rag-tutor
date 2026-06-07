@@ -13,3 +13,10 @@ langchain-text-splitters==1.1.2
 
 # --- Development Dependencies ---
 pytest==9.0.3
+
+# --- Optional: Local-First RAG Stack ---
+# Enables: BGE-M3 embeddings, bge-reranker, LlamaIndex IngestionPipeline.
+# Install with: pip install -e ".[hybrid]"  (or pip install llama-index-core sentence-transformers torch)
+# llama-index-core>=0.12.0,<1.0
+# sentence-transformers>=3.0.0,<6.0
+# torch>=2.0.0

@@ -76,7 +76,8 @@ def retrieve_context_with_memory(
     api_key: str = None,
     n_results: int = 4,
     db_path: Path = DB_PATH,
-    collection_name: str = COLLECTION_NAME
+    collection_name: str = COLLECTION_NAME,
+    use_reranker: bool = None
 ) -> tuple[list[RetrievedSource], str]:
     """Perform retrieval with conversational memory support.
     
@@ -84,13 +85,21 @@ def retrieve_context_with_memory(
         Tuple of (retrieved_sources, disambiguated_query)
     """
     disambiguated = disambiguate_query(query, messages)
+
+    from rag_tutor.config import ENABLE_RERANKER, RERANKER_INITIAL_K
+    from rag_tutor.retrieval.rag_service import _maybe_rerank
+
     expanded = expand_query(disambiguated)
+    initial_k = max(n_results, RERANKER_INITIAL_K) if (use_reranker if use_reranker is not None else ENABLE_RERANKER) else n_results
+    initial_k = min(initial_k, 50)
+
     query_embedding = get_embedding(expanded, api_key=api_key)
-    sources = query_vector_store(
+    candidates = query_vector_store(
         query_embedding=query_embedding,
         subject=subject,
-        n_results=n_results,
+        n_results=initial_k,
         db_path=db_path,
         collection_name=collection_name
     )
+    sources = _maybe_rerank(expanded, candidates, use_reranker, top_k=n_results)
     return sources, disambiguated

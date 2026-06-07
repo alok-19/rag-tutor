@@ -1,7 +1,7 @@
 from .hashing import calculate_file_hash
 from .registry import load_registry, save_registry, migrate_legacy_registry
 from .pdf_loader import DocumentPage, extract_pages_from_pdf
-from .chunking import chunk_pages
+from .chunking import chunk_pages, chunk_pages_llama_index
 
 __all__ = [
     "calculate_file_hash",
@@ -11,4 +11,5 @@ __all__ = [
     "DocumentPage",
     "extract_pages_from_pdf",
     "chunk_pages",
+    "chunk_pages_llama_index",
 ]

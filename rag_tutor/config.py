@@ -13,6 +13,22 @@ STUDY_DIR = Path(os.getenv("STUDY_MATERIALS_DIR", "study_materials"))
 COLLECTION_NAME = os.getenv("CHROMA_COLLECTION_NAME", "study_buddy_notes")
 REGISTRY_FILE = DB_PATH / "ingestion_registry.json"
 
+# Chunking strategy: "recursive" (default, langchain) | "llama_index"
+CHUNKING_STRATEGY = os.getenv("CHUNKING_STRATEGY", "recursive").lower().strip()
+
+# Local hybrid features (opt-in; require the [hybrid] extras to actually run)
+# ENABLE_RERANKER:  two-stage retrieval with BGE cross-encoder.
+# RERANKER_MODEL:   HF model id (default BAAI/bge-reranker-base).
+# RERANKER_INITIAL_K: how many candidates to fetch before reranking.
+ENABLE_RERANKER = os.getenv("ENABLE_RERANKER", "false").lower().strip() in {"1", "true", "yes", "on"}
+RERANKER_MODEL = os.getenv("RERANKER_MODEL", "BAAI/bge-reranker-base").strip()
+RERANKER_INITIAL_K = int(os.getenv("RERANKER_INITIAL_K", "20"))
+
+# BGE-M3 local embeddings (used when EMBEDDING_PROVIDER=bge)
+BGE_M3_MODEL_NAME = os.getenv("BGE_M3_MODEL_NAME", "BAAI/bge-m3").strip()
+BGE_M3_DIM = int(os.getenv("BGE_M3_DIM", "1024"))
+BGE_M3_DEVICE = os.getenv("BGE_M3_DEVICE", "cpu").strip()
+
 # LLM Provider (gemini | openai | deepseek)
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "gemini").lower().strip()
 EMBEDDING_PROVIDER = os.getenv("EMBEDDING_PROVIDER", LLM_PROVIDER).lower().strip()
@@ -33,6 +49,12 @@ MODEL_CONFIG = {
         "embedding": None,  # DeepSeek has no embedding API
         "primary": os.getenv("DEEPSEEK_PRIMARY_MODEL", "deepseek-v4-flash"),
         "fallback": os.getenv("DEEPSEEK_FALLBACK_MODEL", "deepseek-v4-pro"),
+    },
+    "bge": {
+        # BGE is embeddings-only; primary/fallback are placeholders.
+        "embedding": os.getenv("BGE_M3_MODEL_NAME", "BAAI/bge-m3"),
+        "primary": None,
+        "fallback": None,
     },
 }
 

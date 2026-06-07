@@ -19,3 +19,5 @@ Thumbs.db
 # Runtime database and study materials
 chroma_db/
 study_materials/
+
+*.egg-info
