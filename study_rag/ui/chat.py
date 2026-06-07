@@ -37,11 +37,16 @@ def render_chat_interface(api_key: str, selected_subject: str):
         st.stop()
         
     # Initialize message history
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
+    if "subject_messages" not in st.session_state:
+        st.session_state.subject_messages = {}
+        
+    if selected_subject not in st.session_state.subject_messages:
+        st.session_state.subject_messages[selected_subject] = []
+        
+    current_messages = st.session_state.subject_messages[selected_subject]
         
     # Render historical messages
-    for msg in st.session_state.messages:
+    for msg in current_messages:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
             if "sources" in msg and msg["sources"]:
@@ -49,7 +54,7 @@ def render_chat_interface(api_key: str, selected_subject: str):
                 
     # Suggested / Quick-start questions
     selected_suggestion = None
-    if not st.session_state.messages:
+    if not current_messages:
         st.markdown("### 💡 Quick-start suggestions:")
         col1, col2, col3 = st.columns(3)
         
@@ -85,7 +90,7 @@ def render_chat_interface(api_key: str, selected_subject: str):
             st.stop()
             
         # Append and display user message
-        st.session_state.messages.append({"role": "user", "content": user_query})
+        current_messages.append({"role": "user", "content": user_query})
         with st.chat_message("user"):
             st.markdown(user_query)
             
@@ -156,7 +161,7 @@ def render_chat_interface(api_key: str, selected_subject: str):
                         "content": full_response + ("\n\n*(Generated using backup model)*" if fallback_used else ""),
                         "sources": ui_sources
                     }
-                    st.session_state.messages.append(assistant_msg)
+                    current_messages.append(assistant_msg)
                     st.rerun()
                     
             except Exception as final_err:
@@ -179,5 +184,5 @@ def render_chat_interface(api_key: str, selected_subject: str):
                     "content": error_message + "\n\n*(Failed to connect to API, displayed matching segments directly)*",
                     "sources": ui_sources
                 }
-                st.session_state.messages.append(assistant_msg)
+                current_messages.append(assistant_msg)
                 st.rerun()

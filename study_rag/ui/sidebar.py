@@ -135,8 +135,16 @@ def render_sidebar() -> tuple[str, str]:
         
         # Utilities
         st.subheader("Actions")
-        if st.button("🗑️ Clear Chat History", use_container_width=True):
-            st.session_state.messages = []
-            st.rerun()
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("➕ New Chat", use_container_width=True):
+                if "subject_messages" not in st.session_state:
+                    st.session_state.subject_messages = {}
+                st.session_state.subject_messages[selected_subject] = []
+                st.rerun()
+        with col2:
+            if st.button("🗑️ Clear All", use_container_width=True):
+                st.session_state.subject_messages = {}
+                st.rerun()
             
     return api_key, selected_subject
