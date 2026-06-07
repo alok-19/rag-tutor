@@ -1,0 +1,109 @@
+import tempfile
+import json
+from pathlib import Path
+import pytest
+
+from study_rag.documents.hashing import calculate_file_hash
+from study_rag.documents.registry import load_registry, save_registry, migrate_legacy_registry
+from study_rag.retrieval.query_expansion import expand_query
+from study_rag.retrieval.prompts import construct_rag_prompt
+
+def test_file_hashing():
+    """Verify SHA256 hashing utility produces correct hashes."""
+    with tempfile.NamedTemporaryFile(delete=False) as tmp:
+        tmp.write(b"hello world")
+        tmp_path = Path(tmp.name)
+        
+    try:
+        # sha256 of "hello world" is b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9
+        expected = "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9"
+        assert calculate_file_hash(tmp_path) == expected
+    finally:
+        tmp_path.unlink()
+
+def test_registry_load_save():
+    """Verify registry saves and loads data correctly."""
+    with tempfile.NamedTemporaryFile(delete=False) as tmp:
+        tmp_path = Path(tmp.name)
+        
+    try:
+        test_data = {"subject1": {"file1.pdf": {"hash": "123", "pages_count": 5}}}
+        save_registry(test_data, registry_path=tmp_path)
+        
+        loaded = load_registry(registry_path=tmp_path)
+        assert loaded == test_data
+    finally:
+        tmp_path.unlink()
+
+def test_malformed_registry_fallback():
+    """Verify malformed registry content returns an empty dict instead of failing."""
+    with tempfile.NamedTemporaryFile(delete=False, mode="w") as tmp:
+        tmp.write("{invalid_json: 123}")
+        tmp_path = Path(tmp.name)
+        
+    try:
+        loaded = load_registry(registry_path=tmp_path)
+        assert loaded == {}
+    finally:
+        tmp_path.unlink()
+
+def test_non_dict_registry_fallback():
+    """Verify a JSON file containing a list or primitive returns an empty dict."""
+    with tempfile.NamedTemporaryFile(delete=False, mode="w") as tmp:
+        tmp.write('["not a dict"]')
+        tmp_path = Path(tmp.name)
+        
+    try:
+        loaded = load_registry(registry_path=tmp_path)
+        assert loaded == {}
+    finally:
+        tmp_path.unlink()
+
+def test_legacy_registry_migration():
+    """Verify top-level legacy keys are migrated to 'Operating System' group."""
+    legacy_registry = {
+        "operating_system_notes.pdf": {"hash": "abc", "pages_count": 10},
+        "another_notes.pdf": {"hash": "def", "pages_count": 20},
+        "Maths": {"algebra.pdf": {"hash": "xyz", "pages_count": 4}}
+    }
+    
+    migrated = migrate_legacy_registry(legacy_registry, subject_name="Operating System")
+    
+    # Check top level keys
+    assert "operating_system_notes.pdf" not in migrated
+    assert "another_notes.pdf" not in migrated
+    assert migrated["Maths"] == {"algebra.pdf": {"hash": "xyz", "pages_count": 4}}
+    
+    # Check 'Operating System' key contents
+    assert "Operating System" in migrated
+    os_reg = migrated["Operating System"]
+    assert os_reg["operating_system_notes.pdf"] == {"hash": "abc", "pages_count": 10}
+    assert os_reg["another_notes.pdf"] == {"hash": "def", "pages_count": 20}
+
+def test_query_expansion():
+    """Verify acronym expansion only expands targeted abbreviations with word boundaries."""
+    # Standard query expansion
+    assert "pcb" in expand_query("what is pcb").lower()
+    assert "process control block" in expand_query("what is pcb").lower()
+    
+    # Multiple expansions
+    expanded = expand_query("explain SJF and FCFS")
+    assert "shortest job first" in expanded.lower()
+    assert "first come first served" in expanded.lower()
+    
+    # Non-matching substring should NOT expand (e.g. pcbboard, apcb)
+    assert expand_query("pcbboard") == "pcbboard"
+    assert expand_query("apcb") == "apcb"
+
+def test_prompt_construction():
+    """Verify RAG prompt format integrates inputs properly."""
+    subject = "Database Systems"
+    query = "What is ACID?"
+    context = "ACID stands for Atomicity, Consistency, Isolation, Durability."
+    
+    prompt = construct_rag_prompt(subject, query, context)
+    
+    assert subject in prompt
+    assert query in prompt
+    assert context in prompt
+    assert "expert, friendly college-level teaching assistant" in prompt

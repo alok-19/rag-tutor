@@ -1,0 +1,21 @@
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment configuration
+.env
+.env.local
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Runtime database and study materials
+chroma_db/
+study_materials/
