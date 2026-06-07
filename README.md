@@ -99,3 +99,9 @@ PYTHONPATH=. ./venv/bin/pytest
 - **Unified Citations**: Answers citation pages cleanly referencing PDFs, with detailed excerpts rendered in premium dark UI cards.
 - **Incremental Ingestion**: Hashes files, skipping duplicates and cleaning up old chunks when a document changes.
 - **Feedback Tracking**: Rate each assistant response with 👍 / 👎. Feedback is persisted locally to `chroma_db/feedback.jsonl` for future evaluation and iteration.
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
