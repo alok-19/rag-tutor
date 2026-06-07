@@ -5,6 +5,7 @@
 # --- Core Application Dependencies ---
 streamlit==1.58.0
 google-genai==2.8.0
+openai==1.91.0
 chromadb==1.5.9
 python-dotenv==1.2.2
 pymupdf==1.27.2.3

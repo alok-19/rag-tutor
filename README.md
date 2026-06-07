@@ -13,7 +13,7 @@ This application is modularized, fully tested, and supports multiple subjects.
   - **`config.py`**: Configuration constants and environment variable loaders.
   - **`documents/`**: PDF loaders (PyMuPDF), **semantic text chunking**, document models, and file-hashing registry trackers.
   - **`ingestion/`**: Ingestion pipeline orchestration with incremental updates.
-  - **`llm/`**: Gemini client instantiation, exponential backoff batch embeddings, and generation stream management with backup fallback models.
+  - **`llm/`**: Multi-provider LLM abstraction (Gemini, OpenAI, DeepSeek), exponential backoff batch embeddings, and generation stream management with backup fallback models.
   - **`retrieval/`**: Vector store interface, prompt constructors, **conversational memory**, query acronym expansion, and retrieval service logic.
   - **`ui/`**: Streamlit pages, styling sheets, sidebars, message views, and **feedback widgets**.
   - **`feedback.py`**: Local JSONL persistence for thumbs up/down ratings.
@@ -21,6 +21,20 @@ This application is modularized, fully tested, and supports multiple subjects.
 - **`pyproject.toml`**: Modern Python packaging with pinned dependencies.
 - **`requirements.txt`**: Legacy pinned requirements file.
 - **`.env.template`**: Configuration template for API keys and database folders.
+
+---
+
+## Supported LLM Providers
+
+RAG Tutor supports multiple LLM backends via a unified provider abstraction:
+
+| Provider | Chat / Generation | Embeddings | Notes |
+|----------|-------------------|------------|-------|
+| **Gemini** (Google) | ✅ | ✅ | Default. Native support. |
+| **OpenAI** | ✅ | ✅ | GPT-4o-mini, text-embedding-3-small |
+| **DeepSeek** | ✅ | ❌ | OpenAI-compatible API. No embedding API yet. |
+
+> **Hybrid mode**: Use `LLM_PROVIDER=deepseek` + `EMBEDDING_PROVIDER=openai` to get DeepSeek's cheap reasoning with OpenAI embeddings.
 
 ---
 
@@ -32,10 +46,28 @@ This application is modularized, fully tested, and supports multiple subjects.
    ```bash
    cp .env.template .env
    ```
-2. Open `.env` and fill in your Gemini API key:
+2. Open `.env` and configure your provider:
+
+   **Gemini (default):**
    ```env
+   LLM_PROVIDER=gemini
    GEMINI_API_KEY=your_gemini_api_key_here
    ```
+
+   **OpenAI:**
+   ```env
+   LLM_PROVIDER=openai
+   OPENAI_API_KEY=your_openai_api_key_here
+   ```
+
+   **DeepSeek (hybrid with OpenAI embeddings):**
+   ```env
+   LLM_PROVIDER=deepseek
+   EMBEDDING_PROVIDER=openai
+   DEEPSEEK_API_KEY=your_deepseek_api_key_here
+   OPENAI_API_KEY=your_openai_api_key_here
+   ```
+
 3. *(Optional)* Customize the database and material directories:
    ```env
    CHROMA_DB_PATH=chroma_db
@@ -80,7 +112,7 @@ python -m rag_tutor run
 
 ## Running the Test Suite
 
-The project includes unit and integration tests covering hashing, legacy registry migrations, acronym expansions, prompt construction, vector filtering, **semantic chunking**, **chat history formatting**, **query disambiguation**, and **feedback persistence**.
+The project includes unit and integration tests covering hashing, legacy registry migrations, acronym expansions, prompt construction, vector filtering, **semantic chunking**, **chat history formatting**, **query disambiguation**, **feedback persistence**, and **multi-provider LLM abstraction**.
 
 To run the test suite:
 ```bash
@@ -91,6 +123,7 @@ PYTHONPATH=. ./venv/bin/pytest
 
 ## Key Features
 
+- **Multi-Provider LLM Support**: Switch between Gemini, OpenAI, and DeepSeek (OpenAI-compatible). Supports hybrid setups (e.g., DeepSeek chat + OpenAI embeddings) via `LLM_PROVIDER` and `EMBEDDING_PROVIDER` env vars.
 - **Multi-Subject Workspace**: Create individual subjects and manage materials separately. Search queries are isolated to the active subject.
 - **Semantic Chunking**: PDF pages are split into overlapping semantic chunks using `RecursiveCharacterTextSplitter` for better retrieval accuracy.
 - **Acronym Query Expansion**: Automatically expands common technical abbreviations (e.g. PCB to Process Control Block) dynamically before searching.

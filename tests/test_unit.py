@@ -1,3 +1,4 @@
+import os
 import tempfile
 import json
 from pathlib import Path
@@ -215,3 +216,141 @@ def test_feedback_save_and_stats():
         data = json.loads(lines[0])
         assert data["rating"] == "thumbs_up"
         assert data["subject"] == "OS"
+
+
+# ============================================================
+# LLM Provider Tests
+# ============================================================
+
+from unittest.mock import patch, MagicMock
+from rag_tutor.llm.providers import (
+    get_provider,
+    get_embedding_provider,
+    list_providers,
+    GeminiProvider,
+    OpenAIProvider,
+    DeepSeekProvider,
+)
+
+
+def test_list_providers():
+    """Verify all supported providers are listed."""
+    providers = list_providers()
+    assert "gemini" in providers
+    assert "openai" in providers
+    assert "deepseek" in providers
+
+
+def test_provider_factory_gemini():
+    """Verify GeminiProvider is instantiated when LLM_PROVIDER=gemini."""
+    with patch.dict(os.environ, {"LLM_PROVIDER": "gemini"}, clear=False):
+        with patch.object(GeminiProvider, "is_available", return_value=True):
+            provider = get_provider()
+            assert isinstance(provider, GeminiProvider)
+
+
+def test_provider_factory_openai():
+    """Verify OpenAIProvider is instantiated when LLM_PROVIDER=openai."""
+    with patch.dict(os.environ, {"LLM_PROVIDER": "openai"}, clear=False):
+        with patch.object(OpenAIProvider, "is_available", return_value=True):
+            provider = get_provider()
+            assert isinstance(provider, OpenAIProvider)
+
+
+def test_provider_factory_deepseek():
+    """Verify DeepSeekProvider is instantiated when LLM_PROVIDER=deepseek."""
+    with patch.dict(os.environ, {"LLM_PROVIDER": "deepseek"}, clear=False):
+        with patch.object(DeepSeekProvider, "is_available", return_value=True):
+            provider = get_provider()
+            assert isinstance(provider, DeepSeekProvider)
+
+
+def test_provider_factory_unknown():
+    """Verify unknown provider raises ValueError."""
+    with patch.dict(os.environ, {"LLM_PROVIDER": "unknown"}, clear=False):
+        with pytest.raises(ValueError) as exc_info:
+            get_provider()
+        assert "Unknown LLM provider" in str(exc_info.value)
+
+
+def test_provider_factory_unavailable():
+    """Verify unavailable provider raises ValueError."""
+    with patch.dict(os.environ, {"LLM_PROVIDER": "openai"}, clear=False):
+        with patch.object(OpenAIProvider, "is_available", return_value=False):
+            with pytest.raises(ValueError) as exc_info:
+                get_provider()
+            assert "not available" in str(exc_info.value)
+
+
+def test_embedding_provider_override():
+    """Verify EMBEDDING_PROVIDER env var overrides chat provider for embeddings."""
+    with patch.dict(
+        os.environ,
+        {"LLM_PROVIDER": "deepseek", "EMBEDDING_PROVIDER": "openai"},
+        clear=False,
+    ):
+        with patch.object(OpenAIProvider, "is_available", return_value=True):
+            provider = get_embedding_provider()
+            assert isinstance(provider, OpenAIProvider)
+
+
+def test_gemini_provider_embed():
+    """Verify GeminiProvider.embed returns embeddings."""
+    provider = GeminiProvider(api_key="test-key")
+    mock_response = MagicMock()
+    mock_response.embeddings = [
+        MagicMock(values=[0.1, 0.2, 0.3]),
+        MagicMock(values=[0.4, 0.5, 0.6]),
+    ]
+
+    with patch.object(provider, "_get_client") as mock_client:
+        mock_client.return_value.models.embed_content.return_value = mock_response
+        result = provider.embed(["hello", "world"])
+
+    assert len(result) == 2
+    assert result[0] == [0.1, 0.2, 0.3]
+    assert result[1] == [0.4, 0.5, 0.6]
+
+
+def test_openai_provider_embed():
+    """Verify OpenAIProvider.embed returns embeddings."""
+    provider = OpenAIProvider(api_key="test-key")
+    mock_response = MagicMock()
+    mock_response.data = [
+        MagicMock(embedding=[0.1, 0.2, 0.3]),
+        MagicMock(embedding=[0.4, 0.5, 0.6]),
+    ]
+
+    with patch.object(provider, "_get_client") as mock_client:
+        mock_client.return_value.embeddings.create.return_value = mock_response
+        result = provider.embed(["hello", "world"])
+
+    assert len(result) == 2
+    assert result[0] == [0.1, 0.2, 0.3]
+    assert result[1] == [0.4, 0.5, 0.6]
+
+
+def test_openai_provider_generate_stream():
+    """Verify OpenAIProvider.generate_stream yields text chunks."""
+    provider = OpenAIProvider(api_key="test-key")
+    chunk1 = MagicMock(choices=[MagicMock(delta=MagicMock(content="Hello "))])
+    chunk2 = MagicMock(choices=[MagicMock(delta=MagicMock(content="world!"))])
+
+    with patch.object(provider, "_get_client") as mock_client:
+        mock_client.return_value.chat.completions.create.return_value = iter([chunk1, chunk2])
+        result = list(provider.generate_stream("test prompt", model="gpt-4o-mini"))
+
+    assert result == ["Hello ", "world!"]
+
+
+def test_deepseek_provider_is_available():
+    """Verify DeepSeekProvider checks DEEPSEEK_API_KEY."""
+    with patch.dict(os.environ, {"DEEPSEEK_API_KEY": "test-key"}, clear=False):
+        provider = DeepSeekProvider()
+        assert provider.is_available() is True
+
+    with patch.dict(os.environ, {}, clear=False):
+        # Remove DEEPSEEK_API_KEY if present by mocking it away
+        with patch("rag_tutor.llm.providers.deepseek.os.getenv", return_value=None):
+            provider = DeepSeekProvider(api_key=None)
+            assert provider.is_available() is False
