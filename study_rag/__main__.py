@@ -6,8 +6,10 @@ def run_ui():
     """Launches the Streamlit UI programmatically."""
     try:
         from streamlit.web import cli as stcli
-    except ImportError:
-        print("Error: Streamlit is not installed. Please install it using: pip install streamlit")
+    except ImportError as e:
+        print(f"Error: {e}")
+        print("Please ensure you are running Python from your virtual environment.")
+        print("Try running: ./venv/bin/python -m study_rag run")
         sys.exit(1)
         
     current_dir = Path(__file__).parent
