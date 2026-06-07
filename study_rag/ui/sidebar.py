@@ -127,7 +127,8 @@ def render_sidebar() -> tuple[str, str]:
                     name = pdf.name
                     if isinstance(subject_registry, dict) and name in subject_registry:
                         pages = subject_registry[name].get("pages_count", "?")
-                        st.markdown(f"🟢 **{name}**  \n`{pages} pages ingested`")
+                        chunks = subject_registry[name].get("chunks_count", "?")
+                        st.markdown(f"🟢 **{name}**  \n`{pages} pages / {chunks} chunks ingested`")
                     else:
                         st.markdown(f"⚪ **{name}**  \n`Pending ingestion`")
             

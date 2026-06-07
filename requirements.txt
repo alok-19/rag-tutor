@@ -1,5 +1,14 @@
-streamlit
-google-genai
-chromadb
-pypdf
-python-dotenv
+# Legacy requirements file for pip users.
+# Prefer installing with: pip install -e .
+# Or use pyproject.toml for modern dependency management.
+
+# --- Core Application Dependencies ---
+streamlit==1.58.0
+google-genai==2.8.0
+chromadb==1.5.9
+python-dotenv==1.2.2
+pymupdf==1.27.2.3
+langchain-text-splitters==1.1.2
+
+# --- Development Dependencies ---
+pytest==9.0.3

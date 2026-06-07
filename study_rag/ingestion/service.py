@@ -5,7 +5,8 @@ from study_rag.documents import (
     load_registry,
     save_registry,
     migrate_legacy_registry,
-    extract_pages_from_pdf
+    extract_pages_from_pdf,
+    chunk_pages
 )
 from study_rag.llm.embeddings import get_embeddings_batch
 from study_rag.retrieval.vector_store import delete_source_documents, add_documents_to_store
@@ -62,10 +63,12 @@ def ingest_pdfs(
             print(f"No readable text found in {filename}.")
             continue
             
-        print(f"Extracted {len(pages)} pages. Generating embeddings...")
+        # Split pages into semantic chunks
+        chunks = chunk_pages(pages)
+        print(f"Extracted {len(pages)} pages -> {len(chunks)} chunks. Generating embeddings...")
         
         # Prepare content for embedding
-        texts = [p.text for p in pages]
+        texts = [c.text for c in chunks]
         
         # If the file was previously ingested but changed, delete old entries
         if filename in subject_registry:
@@ -83,13 +86,14 @@ def ingest_pdfs(
             
             # Prepare metadata and IDs
             metadatas = [{
-                "source": p.source, 
-                "page": p.page_num,
+                "source": c.source, 
+                "page": c.page_num,
+                "chunk_index": c.chunk_index,
                 "subject": subject_name
-            } for p in pages]
+            } for c in chunks]
             
-            # Unique ID including subject to prevent collisions across subjects
-            ids = [f"{subject_name}_{filename}_page_{p.page_num}" for p in pages]
+            # Unique ID including subject and chunk index to prevent collisions
+            ids = [f"{subject_name}_{filename}_page_{c.page_num}_chunk_{c.chunk_index}" for c in chunks]
             
             # Add to Chroma DB
             add_documents_to_store(
@@ -105,6 +109,7 @@ def ingest_pdfs(
             subject_registry[filename] = {
                 "hash": file_hash,
                 "pages_count": len(pages),
+                "chunks_count": len(chunks),
                 "timestamp": filepath.stat().st_mtime
             }
             files_processed += 1
