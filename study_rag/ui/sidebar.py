@@ -20,10 +20,30 @@ def render_sidebar() -> tuple[str, str]:
     Returns:
         tuple[str, str]: (api_key, selected_subject)
     """
+    subjects = get_subjects()
+    if "selected_subject" not in st.session_state:
+        st.session_state.selected_subject = subjects[0] if subjects else "Operating System"
+    selected_subject = st.session_state.selected_subject
+
     with st.sidebar:
         st.image("https://img.icons8.com/color/96/books.png", width=60)
         st.title("Study Buddy AI")
         st.caption("General Purpose RAG Assistant")
+        st.write("---")
+
+        # Conversation Actions at the top
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("➕ New Chat", use_container_width=True):
+                if "subject_messages" not in st.session_state:
+                    st.session_state.subject_messages = {}
+                st.session_state.subject_messages[selected_subject] = []
+                st.rerun()
+        with col2:
+            if st.button("🗑️ Clear All", use_container_width=True):
+                st.session_state.subject_messages = {}
+                st.rerun()
+
         st.write("---")
 
         # API Key Configuration
@@ -44,19 +64,15 @@ def render_sidebar() -> tuple[str, str]:
 
         # Subject Selector / Creator
         st.subheader("Subjects Workspace")
-        subjects = get_subjects()
         
-        if "selected_subject" not in st.session_state:
-            st.session_state.selected_subject = subjects[0] if subjects else "Operating System"
-            
-        selected_subject = st.selectbox(
+        selected_subject_ui = st.selectbox(
             "Select Active Subject:",
             options=subjects,
-            index=subjects.index(st.session_state.selected_subject) if st.session_state.selected_subject in subjects else 0
+            index=subjects.index(selected_subject) if selected_subject in subjects else 0
         )
         
-        if selected_subject != st.session_state.selected_subject:
-            st.session_state.selected_subject = selected_subject
+        if selected_subject_ui != selected_subject:
+            st.session_state.selected_subject = selected_subject_ui
             st.rerun()
 
         # Create New Subject Dialog
@@ -130,21 +146,5 @@ def render_sidebar() -> tuple[str, str]:
                 st.info("Provide an API key to enable document ingestion.")
         else:
             st.info("No study materials in this subject yet. Upload some PDFs above!")
-
-        st.write("---")
-        
-        # Utilities
-        st.subheader("Actions")
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("➕ New Chat", use_container_width=True):
-                if "subject_messages" not in st.session_state:
-                    st.session_state.subject_messages = {}
-                st.session_state.subject_messages[selected_subject] = []
-                st.rerun()
-        with col2:
-            if st.button("🗑️ Clear All", use_container_width=True):
-                st.session_state.subject_messages = {}
-                st.rerun()
             
     return api_key, selected_subject
