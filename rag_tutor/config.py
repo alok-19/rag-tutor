@@ -31,8 +31,8 @@ MODEL_CONFIG = {
     },
     "deepseek": {
         "embedding": None,  # DeepSeek has no embedding API
-        "primary": os.getenv("DEEPSEEK_PRIMARY_MODEL", "deepseek-chat"),
-        "fallback": os.getenv("DEEPSEEK_FALLBACK_MODEL", "deepseek-reasoner"),
+        "primary": os.getenv("DEEPSEEK_PRIMARY_MODEL", "deepseek-v4-flash"),
+        "fallback": os.getenv("DEEPSEEK_FALLBACK_MODEL", "deepseek-v4-pro"),
     },
 }
 
