@@ -1,6 +1,8 @@
 import streamlit as st
 from rag_tutor.retrieval import has_subject_documents, retrieve_context_with_memory, build_chat_history, construct_rag_prompt
 from rag_tutor.llm import generate_response_stream
+from rag_tutor.llm.providers import get_provider, list_providers
+from rag_tutor.config import LLM_PROVIDER, EMBEDDING_PROVIDER
 from rag_tutor.feedback import save_feedback
 
 def render_citations(sources: list[dict]):
@@ -135,7 +137,8 @@ def render_chat_interface(api_key: str, selected_subject: str):
         
     if user_query:
         if not api_key:
-            st.error("Please provide a Gemini/Google API Key in the sidebar to run queries.")
+            provider_label = LLM_PROVIDER.upper()
+            st.error(f"Please provide a {provider_label} API Key in the sidebar to run queries.")
             st.stop()
             
         # Append and display user message

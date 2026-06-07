@@ -14,7 +14,13 @@ class GeminiProvider(LLMProvider):
     name = "gemini"
 
     def __init__(self, api_key: str = None):
-        self._api_key = api_key or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+        # Prefer env keys; fallback to passed key for manual sidebar entry
+        env_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+        # Simple heuristic: reject short or placeholder-looking keys
+        if env_key and len(env_key) >= 10 and "your_" not in env_key.lower():
+            self._api_key = env_key
+        else:
+            self._api_key = api_key
         self._client = None
         self._last_key = None
 

@@ -14,7 +14,8 @@ class DeepSeekProvider(OpenAIProvider):
 
     def __init__(self, api_key: str = None):
         base_url = "https://api.deepseek.com"
-        super().__init__(api_key=api_key or os.getenv("DEEPSEEK_API_KEY"), base_url=base_url)
+        # Prefer env keys; fallback to passed key for manual sidebar entry
+        super().__init__(api_key=os.getenv("DEEPSEEK_API_KEY") or api_key, base_url=base_url)
 
     def is_available(self) -> bool:
         return bool(os.getenv("DEEPSEEK_API_KEY") or (hasattr(self, "_api_key") and self._api_key))

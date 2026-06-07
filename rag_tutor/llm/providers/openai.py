@@ -6,13 +6,29 @@ from openai import OpenAI
 from rag_tutor.llm.providers.base import LLMProvider
 
 
+def _looks_like_api_key(key: str) -> bool:
+    """Heuristic to filter out placeholder/dummy keys."""
+    if not key or len(key) < 10:
+        return False
+    lower = key.lower()
+    # Reject obvious placeholders
+    placeholders = ("your_", "placeholder", "example", "test", "dummy", "local", "none", "xxx", "todo")
+    if any(p in lower for p in placeholders):
+        return False
+    return True
+
+
 class OpenAIProvider(LLMProvider):
     """OpenAI provider for embeddings and generation."""
 
     name = "openai"
 
     def __init__(self, api_key: str = None, base_url: str = None):
-        self._api_key = api_key or os.getenv("OPENAI_API_KEY")
+        # Prefer env keys; fallback to passed key for manual sidebar entry
+        env_key = os.getenv("OPENAI_API_KEY")
+        self._api_key = (
+            env_key if _looks_like_api_key(env_key) else api_key
+        )
         self._base_url = base_url  # None for native OpenAI
         self._client = None
         self._last_key = None
