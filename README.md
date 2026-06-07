@@ -8,9 +8,8 @@ This application is modularized, fully tested, and supports multiple subjects.
 
 ## Project Structure
 
-- **`app.py`**: Streamlit application UI entrypoint launcher.
-- **`ingest.py`**: CLI document ingestion launcher.
 - **`study_rag/`**: Core application package:
+  - **`__main__.py`**: Unified entrypoint CLI to run commands (`run`, `ingest`).
   - **`config.py`**: Configuration constants and environment variable loaders.
   - **`documents/`**: PDF loaders, document models, and file-hashing registry trackers.
   - **`ingestion/`**: Ingestion pipeline orchestration.
@@ -55,16 +54,16 @@ You can ingest textbook PDFs in one of two ways:
 
 - **Via Command Line**:
   ```bash
-  python ingest.py
+  python -m study_rag ingest --subject "Operating System"
   ```
 - **Via the Streamlit UI**:
   Start the app, select or create your subject, upload documents in the sidebar, and click **"🚀 Ingest / Update Subject"**.
 
 ### 4. Run the Streamlit Application
 
-Start the development server:
+Start the web application:
 ```bash
-streamlit run app.py
+python -m study_rag run
 ```
 
 ---
