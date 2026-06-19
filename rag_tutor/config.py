@@ -38,7 +38,7 @@ MODEL_CONFIG = {
     "gemini": {
         "embedding": os.getenv("GEMINI_EMBEDDING_MODEL", "gemini-embedding-2"),
         "primary": os.getenv("GEMINI_PRIMARY_MODEL", "gemini-2.5-flash"),
-        "fallback": os.getenv("GEMINI_FALLBACK_MODEL", "gemini-1.5-flash"),
+        "fallback": os.getenv("GEMINI_FALLBACK_MODEL", "gemini-2.5-flash-lite"),
     },
     "openai": {
         "embedding": os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small"),
@@ -61,7 +61,7 @@ MODEL_CONFIG = {
 # Backwards-compatible aliases (used by legacy code paths)
 EMBEDDING_MODEL = os.getenv("GEMINI_EMBEDDING_MODEL", "gemini-embedding-2")
 PRIMARY_GENERATION_MODEL = os.getenv("GEMINI_PRIMARY_MODEL", "gemini-2.5-flash")
-FALLBACK_GENERATION_MODEL = os.getenv("GEMINI_FALLBACK_MODEL", "gemini-1.5-flash")
+FALLBACK_GENERATION_MODEL = os.getenv("GEMINI_FALLBACK_MODEL", "gemini-2.5-flash-lite")
 
 # Ensure dirs exist
 STUDY_DIR.mkdir(exist_ok=True)

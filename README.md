@@ -19,7 +19,6 @@ This application is modularized, fully tested, and supports multiple subjects.
   - **`feedback.py`**: Local JSONL persistence for thumbs up/down ratings.
 - **`tests/`**: Unit and integration test suite.
 - **`pyproject.toml`**: Modern Python packaging with pinned dependencies.
-- **`requirements.txt`**: Legacy pinned requirements file.
 - **`.env.template`**: Configuration template for API keys and database folders.
 
 ---
@@ -112,12 +111,6 @@ source venv/bin/activate
 pip install -e .
 ```
 
-**Alternative (legacy `requirements.txt`):**
-```bash
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
 ### 3. Running Ingestion
 
 You can ingest textbook PDFs in one of two ways:
@@ -160,7 +153,7 @@ PYTHONPATH=. ./venv/bin/pytest
 - **Chunk-Level Deduplication**: LlamaIndex-based ingestion includes hash-based dedup so re-ingesting the same content is a no-op.
 - **Acronym Query Expansion**: Automatically expands common technical abbreviations (e.g. PCB to Process Control Block) dynamically before searching.
 - **Conversational Memory**: The LLM prompt includes the last 3 conversation turns, and follow-up queries like *"Explain more"* are automatically disambiguated using prior assistant context.
-- **Transient Error Retry & Model Fallback**: Automatically retries on rate limits (429/503) and falls back to a secondary model (`gemini-1.5-flash`) if high demand persists.
+- **Transient Error Retry & Model Fallback**: Automatically retries on rate limits (429/503) and falls back to a secondary model (`gemini-2.5-flash-lite`) if high demand persists.
 - **Unified Citations**: Answers citation pages cleanly referencing PDFs, with detailed excerpts rendered in premium dark UI cards.
 - **Incremental Ingestion**: Hashes files, skipping duplicates and cleaning up old chunks when a document changes.
 - **Feedback Tracking**: Rate each assistant response with 👍 / 👎. Feedback is persisted locally to `chroma_db/feedback.jsonl` for future evaluation and iteration.
