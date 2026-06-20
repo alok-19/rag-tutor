@@ -92,10 +92,15 @@ def render_sidebar() -> tuple[str, str]:
                 if "subject_messages" not in st.session_state:
                     st.session_state.subject_messages = {}
                 st.session_state.subject_messages[selected_subject] = []
+                from rag_tutor.conversations import save_conversation
+                save_conversation(selected_subject, [])
                 st.rerun()
         with col2:
             if st.button("🗑️ Clear All", use_container_width=True):
+                from rag_tutor.conversations import clear_conversation
                 st.session_state.subject_messages = {}
+                for subj in [selected_subject]:
+                    clear_conversation(subj)
                 st.rerun()
 
         st.write("---")

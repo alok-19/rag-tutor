@@ -188,6 +188,112 @@ def inject_styles():
     header div[role="button"]:last-child {
         display: none !important;
     }
+
+    /* ============================================================
+       New components: source pills, interactive sources, reader,
+       flashcards, confidence badges, study modes
+       ============================================================ */
+
+    /* Live source pills shown during retrieval */
+    .source-pills-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 6px 0 2px 0;
+    }
+    .src-pill {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(99, 102, 241, 0.12);
+        border: 1px solid rgba(99, 102, 241, 0.25);
+        color: #c7d2fe;
+        padding: 3px 9px;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 500;
+        line-height: 1.4;
+    }
+
+    /* Interactive numbered source cards */
+    .source-card.interactive {
+        display: block;
+        position: relative;
+    }
+    .source-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        background: linear-gradient(135deg, #a78bfa 0%, #6366f1 100%);
+        color: #0b0d12;
+        border-radius: 50%;
+        font-size: 0.72rem;
+        font-weight: 700;
+        margin-right: 8px;
+    }
+    .page-badge {
+        background: rgba(99, 102, 241, 0.1) !important;
+        border-color: rgba(99, 102, 241, 0.2) !important;
+        color: #a5b4fc !important;
+    }
+    .match-badge {
+        font-size: 0.7rem !important;
+    }
+    .match-high { background: rgba(52, 211, 153, 0.12) !important; border-color: rgba(52, 211, 153, 0.3) !important; color: #6ee7b7 !important; }
+    .match-medium { background: rgba(251, 191, 36, 0.12) !important; border-color: rgba(251, 191, 36, 0.3) !important; color: #fcd34d !important; }
+    .match-low { background: rgba(248, 113, 113, 0.12) !important; border-color: rgba(248, 113, 113, 0.3) !important; color: #fca5a5 !important; }
+    .source-snippet {
+        font-size: 0.88rem;
+        color: #94a3b8;
+        margin-top: 8px;
+        line-height: 1.45;
+    }
+
+    /* Reader pane frame */
+    div[data-testid="stImage"] img {
+        border-radius: 8px;
+        border: 1px solid rgba(99, 102, 241, 0.15);
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+    }
+
+    /* Flashcard */
+    .flashcard {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.7) 100%);
+        border: 1px solid rgba(99, 102, 241, 0.25);
+        border-radius: 16px;
+        padding: 28px 24px;
+        min-height: 180px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        margin: 12px 0;
+        transition: all 0.25s ease;
+    }
+    .flashcard.flipped {
+        border-color: rgba(167, 139, 250, 0.5);
+        box-shadow: 0 8px 28px rgba(99, 102, 241, 0.18);
+    }
+    .flashcard-face-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: #818cf8;
+        font-weight: 600;
+        margin-bottom: 14px;
+    }
+    .flashcard-content {
+        font-size: 1.15rem;
+        color: #e2e8f0;
+        line-height: 1.5;
+    }
+    .flashcard-progress {
+        font-size: 0.75rem;
+        color: #64748b;
+        margin-top: 16px;
+    }
+
 </style>
 """, unsafe_allow_html=True)
 
