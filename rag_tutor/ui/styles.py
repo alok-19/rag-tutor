@@ -7,9 +7,24 @@ def inject_styles():
     /* Google Fonts */
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
     
-    /* Global Styles */
+    /* Global Styles
+       NOTE: scoped to NOT clobber Streamlit's Material Symbols icon font.
+       A global `font-family` on body cascades into icon spans and replaces
+       icon glyphs (e.g. the sidebar expand/collapse arrows, menu, etc.) with
+       literal text like "keyboard_double_arrow_right", making those buttons
+       appear broken/invisible. We explicitly restore the icon font for
+       material-icon elements after setting our app font. */
     html, body, [data-testid="stAppViewContainer"] {
         font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    /* Restore icon glyphs (sidebar toggle, menu, app icons). Must come after
+       the global font-family rule so the icon-class specificity wins. */
+    [data-testid="stIconMaterial"],
+    [class*="material-symbols"],
+    [class*="material-icons"],
+    [data-testid="stSidebarCollapseButton"] span,
+    [data-testid="stExpandSidebarButton"] span {
+        font-family: "Material Symbols Rounded", "Material Symbols Outlined", "Material Icons", sans-serif !important;
     }
     
     /* Main container background */
@@ -178,15 +193,23 @@ def inject_styles():
     [data-testid="stMainMenu"] {
         display: none !important;
     }
-    
-    /* Hide Streamlit's "Deploy" button in the top-right corner (multiple selectors for cross-version compatibility) */
+
+    /* Hide Streamlit's "Deploy" button in the top-right corner.
+       Targeted by testid only — never broad header-button rules, which would
+       also hide the sidebar toggle. */
+    [data-testid="stAppDeployButton"],
     [data-testid="stDeployButton"],
-    [data-testid="stToolbar"] button,
-    header button[kind="header-noPadding"],
-    header a[href*="share.streamlit.io"],
     .stAppDeployButton,
-    header div[role="button"]:last-child {
+    header a[href*="share.streamlit.io"] {
         display: none !important;
+    }
+
+    /* Ensure the sidebar toggle arrows render at full visibility (their icons
+       are restored by the font-family rule near the top of this stylesheet). */
+    [data-testid="stSidebarCollapseButton"],
+    [data-testid="stExpandSidebarButton"] {
+        visibility: visible !important;
+        opacity: 1 !important;
     }
 
     /* ============================================================
@@ -297,7 +320,11 @@ def inject_styles():
 </style>
 """, unsafe_allow_html=True)
 
-    # JavaScript fallbacks: suppress shortcuts and hide Deploy after render
+    # JavaScript fallbacks: suppress shortcuts and hide Deploy after render.
+    # NOTE: the sidebar toggle arrows are rendered correctly via the font-family
+    # rule near the top of this stylesheet (restoring "Material Symbols" so the
+    # arrow glyphs show instead of literal icon-name text). No JS is needed to
+    # keep the toggle visible.
     st.markdown("""
 <script>
     // Block Streamlit's Clear Caches shortcut (C or Shift+C) while allowing Cmd+C / Ctrl+C
@@ -312,7 +339,6 @@ def inject_styles():
         var deployButtons = document.querySelectorAll('[data-testid="stDeployButton"], .stAppDeployButton');
         deployButtons.forEach(function(btn) { btn.style.display = 'none'; });
 
-        // Also hunt by text content inside header/toolbar
         var toolbar = document.querySelector('header') || document.querySelector('[data-testid="stToolbar"]');
         if (toolbar) {
             var allButtons = toolbar.querySelectorAll('button, a, div[role="button"]');
