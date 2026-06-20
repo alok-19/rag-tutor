@@ -1,0 +1,44 @@
+# Run the full RAG Tutor app with persistent data volumes.
+#
+#   docker compose up        # build + run, logs to terminal (Ctrl-C to stop)
+#   docker compose up -d     # detached
+#   docker compose down      # stop + remove container (volumes are kept)
+#
+# API keys: either create a .env file (see .env.template) next to this file —
+# Compose auto-loads it — or pass keys inline:
+#   GEMINI_API_KEY=xxx docker compose up
+#
+# Data persistence: the `chroma_db` and `study_materials` named volumes keep
+# your indexed documents and uploaded PDFs across `compose down`/`up`.
+
+services:
+  rag-tutor:
+    build: .
+    image: rag-tutor:latest
+    container_name: rag-tutor
+    ports:
+      - "8501:8501"
+    volumes:
+      - rag_chroma_db:/data/chroma_db
+      - rag_study_materials:/data/study_materials
+    # Provider keys are read from the host environment / .env file.
+    # Only the ones you actually use need to be set.
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
+      - LLM_PROVIDER=${LLM_PROVIDER:-gemini}
+      - EMBEDDING_PROVIDER=${EMBEDDING_PROVIDER:-${LLM_PROVIDER:-gemini}}
+      - CHUNKING_STRATEGY=${CHUNKING_STRATEGY:-recursive}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request, sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8501/_stcore/health').status == 200 else 1)"]
+      interval: 30s
+      timeout: 10s
+      start_period: 20s
+      retries: 3
+
+volumes:
+  rag_chroma_db:
+  rag_study_materials:
