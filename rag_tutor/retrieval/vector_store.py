@@ -8,6 +8,9 @@ class RetrievedSource:
     source: str
     page: int
     text: str
+    # Similarity score in [0.0, 1.0] (1 - cosine_distance from Chroma).
+    # Defaults to 0.0 so existing positional/keyword constructions stay valid.
+    score: float = 0.0
 
 def get_chroma_client(db_path: Path = DB_PATH) -> chromadb.PersistentClient:
     """Get the persistent ChromaDB client."""
@@ -40,14 +43,24 @@ def query_vector_store(
     if results and "documents" in results and results["documents"]:
         documents = results["documents"][0]
         metadatas = results["metadatas"][0]
-        
-        for doc, meta in zip(documents, metadatas):
+        distances = results.get("distances", [[]])[0] if results.get("distances") else []
+
+        for i, (doc, meta) in enumerate(zip(documents, metadatas)):
+            # Convert cosine distance -> similarity score in [0, 1].
+            # Guard against missing/None distances (older Chroma or odd results).
+            score = 0.0
+            if i < len(distances) and distances[i] is not None:
+                try:
+                    score = max(0.0, min(1.0, 1.0 - float(distances[i])))
+                except (TypeError, ValueError):
+                    score = 0.0
             retrieved_sources.append(RetrievedSource(
                 source=meta.get("source", "Unknown"),
                 page=meta.get("page", 0),
-                text=doc
+                text=doc,
+                score=score,
             ))
-            
+
     return retrieved_sources
 
 def delete_source_documents(

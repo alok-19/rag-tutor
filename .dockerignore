@@ -1,0 +1,46 @@
+# Keep the build context tiny and prevent secrets / local data / build
+# artifacts from leaking into the image.
+
+# Virtual envs (the image installs its own)
+venv/
+.venv/
+env/
+
+# Local data stores and user materials (mounted as volumes at runtime)
+chroma_db/
+study_materials/
+
+# Secrets — never bake into an image
+.env
+.env.*
+!.env.template
+
+# Python caches and build artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+
+# Stray artifact from earlier in the project's history
+path/
+
+# Test / eval runtime outputs
+chat_error.log
+*.log
+
+# Version control and editor config
+.git/
+.gitignore
+.github/
+.vscode/
+.idea/
+.DS_Store
+
+# Docs that don't belong in the runtime image
+*.md
+!README.md

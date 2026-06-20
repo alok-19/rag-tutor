@@ -12,6 +12,7 @@ STUDY_DIR = Path(os.getenv("STUDY_MATERIALS_DIR", "study_materials"))
 # Chroma DB Settings
 COLLECTION_NAME = os.getenv("CHROMA_COLLECTION_NAME", "study_buddy_notes")
 REGISTRY_FILE = DB_PATH / "ingestion_registry.json"
+CONVERSATIONS_DIR = DB_PATH / "conversations"
 
 # Chunking strategy: "recursive" (default, langchain) | "llama_index"
 CHUNKING_STRATEGY = os.getenv("CHUNKING_STRATEGY", "recursive").lower().strip()
@@ -38,7 +39,7 @@ MODEL_CONFIG = {
     "gemini": {
         "embedding": os.getenv("GEMINI_EMBEDDING_MODEL", "gemini-embedding-2"),
         "primary": os.getenv("GEMINI_PRIMARY_MODEL", "gemini-2.5-flash"),
-        "fallback": os.getenv("GEMINI_FALLBACK_MODEL", "gemini-1.5-flash"),
+        "fallback": os.getenv("GEMINI_FALLBACK_MODEL", "gemini-2.5-flash-lite"),
     },
     "openai": {
         "embedding": os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small"),
@@ -61,7 +62,7 @@ MODEL_CONFIG = {
 # Backwards-compatible aliases (used by legacy code paths)
 EMBEDDING_MODEL = os.getenv("GEMINI_EMBEDDING_MODEL", "gemini-embedding-2")
 PRIMARY_GENERATION_MODEL = os.getenv("GEMINI_PRIMARY_MODEL", "gemini-2.5-flash")
-FALLBACK_GENERATION_MODEL = os.getenv("GEMINI_FALLBACK_MODEL", "gemini-1.5-flash")
+FALLBACK_GENERATION_MODEL = os.getenv("GEMINI_FALLBACK_MODEL", "gemini-2.5-flash-lite")
 
 # Ensure dirs exist
 STUDY_DIR.mkdir(exist_ok=True)

@@ -7,9 +7,24 @@ def inject_styles():
     /* Google Fonts */
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
     
-    /* Global Styles */
+    /* Global Styles
+       NOTE: scoped to NOT clobber Streamlit's Material Symbols icon font.
+       A global `font-family` on body cascades into icon spans and replaces
+       icon glyphs (e.g. the sidebar expand/collapse arrows, menu, etc.) with
+       literal text like "keyboard_double_arrow_right", making those buttons
+       appear broken/invisible. We explicitly restore the icon font for
+       material-icon elements after setting our app font. */
     html, body, [data-testid="stAppViewContainer"] {
         font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    /* Restore icon glyphs (sidebar toggle, menu, app icons). Must come after
+       the global font-family rule so the icon-class specificity wins. */
+    [data-testid="stIconMaterial"],
+    [class*="material-symbols"],
+    [class*="material-icons"],
+    [data-testid="stSidebarCollapseButton"] span,
+    [data-testid="stExpandSidebarButton"] span {
+        font-family: "Material Symbols Rounded", "Material Symbols Outlined", "Material Icons", sans-serif !important;
     }
     
     /* Main container background */
@@ -178,20 +193,138 @@ def inject_styles():
     [data-testid="stMainMenu"] {
         display: none !important;
     }
-    
-    /* Hide Streamlit's "Deploy" button in the top-right corner (multiple selectors for cross-version compatibility) */
+
+    /* Hide Streamlit's "Deploy" button in the top-right corner.
+       Targeted by testid only — never broad header-button rules, which would
+       also hide the sidebar toggle. */
+    [data-testid="stAppDeployButton"],
     [data-testid="stDeployButton"],
-    [data-testid="stToolbar"] button,
-    header button[kind="header-noPadding"],
-    header a[href*="share.streamlit.io"],
     .stAppDeployButton,
-    header div[role="button"]:last-child {
+    header a[href*="share.streamlit.io"] {
         display: none !important;
     }
+
+    /* Ensure the sidebar toggle arrows render at full visibility (their icons
+       are restored by the font-family rule near the top of this stylesheet). */
+    [data-testid="stSidebarCollapseButton"],
+    [data-testid="stExpandSidebarButton"] {
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    /* ============================================================
+       New components: source pills, interactive sources, reader,
+       flashcards, confidence badges, study modes
+       ============================================================ */
+
+    /* Live source pills shown during retrieval */
+    .source-pills-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 6px 0 2px 0;
+    }
+    .src-pill {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(99, 102, 241, 0.12);
+        border: 1px solid rgba(99, 102, 241, 0.25);
+        color: #c7d2fe;
+        padding: 3px 9px;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 500;
+        line-height: 1.4;
+    }
+
+    /* Interactive numbered source cards */
+    .source-card.interactive {
+        display: block;
+        position: relative;
+    }
+    .source-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        background: linear-gradient(135deg, #a78bfa 0%, #6366f1 100%);
+        color: #0b0d12;
+        border-radius: 50%;
+        font-size: 0.72rem;
+        font-weight: 700;
+        margin-right: 8px;
+    }
+    .page-badge {
+        background: rgba(99, 102, 241, 0.1) !important;
+        border-color: rgba(99, 102, 241, 0.2) !important;
+        color: #a5b4fc !important;
+    }
+    .match-badge {
+        font-size: 0.7rem !important;
+    }
+    .match-high { background: rgba(52, 211, 153, 0.12) !important; border-color: rgba(52, 211, 153, 0.3) !important; color: #6ee7b7 !important; }
+    .match-medium { background: rgba(251, 191, 36, 0.12) !important; border-color: rgba(251, 191, 36, 0.3) !important; color: #fcd34d !important; }
+    .match-low { background: rgba(248, 113, 113, 0.12) !important; border-color: rgba(248, 113, 113, 0.3) !important; color: #fca5a5 !important; }
+    .source-snippet {
+        font-size: 0.88rem;
+        color: #94a3b8;
+        margin-top: 8px;
+        line-height: 1.45;
+    }
+
+    /* Reader pane frame */
+    div[data-testid="stImage"] img {
+        border-radius: 8px;
+        border: 1px solid rgba(99, 102, 241, 0.15);
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+    }
+
+    /* Flashcard */
+    .flashcard {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.7) 100%);
+        border: 1px solid rgba(99, 102, 241, 0.25);
+        border-radius: 16px;
+        padding: 28px 24px;
+        min-height: 180px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        margin: 12px 0;
+        transition: all 0.25s ease;
+    }
+    .flashcard.flipped {
+        border-color: rgba(167, 139, 250, 0.5);
+        box-shadow: 0 8px 28px rgba(99, 102, 241, 0.18);
+    }
+    .flashcard-face-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: #818cf8;
+        font-weight: 600;
+        margin-bottom: 14px;
+    }
+    .flashcard-content {
+        font-size: 1.15rem;
+        color: #e2e8f0;
+        line-height: 1.5;
+    }
+    .flashcard-progress {
+        font-size: 0.75rem;
+        color: #64748b;
+        margin-top: 16px;
+    }
+
 </style>
 """, unsafe_allow_html=True)
 
-    # JavaScript fallbacks: suppress shortcuts and hide Deploy after render
+    # JavaScript fallbacks: suppress shortcuts and hide Deploy after render.
+    # NOTE: the sidebar toggle arrows are rendered correctly via the font-family
+    # rule near the top of this stylesheet (restoring "Material Symbols" so the
+    # arrow glyphs show instead of literal icon-name text). No JS is needed to
+    # keep the toggle visible.
     st.markdown("""
 <script>
     // Block Streamlit's Clear Caches shortcut (C or Shift+C) while allowing Cmd+C / Ctrl+C
@@ -206,7 +339,6 @@ def inject_styles():
         var deployButtons = document.querySelectorAll('[data-testid="stDeployButton"], .stAppDeployButton');
         deployButtons.forEach(function(btn) { btn.style.display = 'none'; });
 
-        // Also hunt by text content inside header/toolbar
         var toolbar = document.querySelector('header') || document.querySelector('[data-testid="stToolbar"]');
         if (toolbar) {
             var allButtons = toolbar.querySelectorAll('button, a, div[role="button"]');

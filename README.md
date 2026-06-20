@@ -19,7 +19,6 @@ This application is modularized, fully tested, and supports multiple subjects.
   - **`feedback.py`**: Local JSONL persistence for thumbs up/down ratings.
 - **`tests/`**: Unit and integration test suite.
 - **`pyproject.toml`**: Modern Python packaging with pinned dependencies.
-- **`requirements.txt`**: Legacy pinned requirements file.
 - **`.env.template`**: Configuration template for API keys and database folders.
 
 ---
@@ -112,12 +111,6 @@ source venv/bin/activate
 pip install -e .
 ```
 
-**Alternative (legacy `requirements.txt`):**
-```bash
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
 ### 3. Running Ingestion
 
 You can ingest textbook PDFs in one of two ways:
@@ -140,14 +133,88 @@ python -m rag_tutor run
 
 ---
 
+## Run with Docker
+
+Prefer a containerized setup? The included `Dockerfile` builds a slim image
+running the full UI (chat, quiz, flashcards, PDF reader, eval harness) with
+**core dependencies only** (no torch). Your indexed database and uploaded PDFs
+persist across container recreations via named volumes.
+
+### Quick start (Docker Compose)
+
+```bash
+# Create a .env file with your API key (see .env.template), then:
+docker compose up
+```
+
+App is served at `http://localhost:8501`. Data lives in two named volumes
+(`rag_chroma_db`, `rag_study_materials`) and survives `docker compose down`.
+
+### Manual Docker run
+
+```bash
+# Build the image
+docker build -t rag-tutor .
+
+# Run, passing your provider key and persisting data to a volume
+docker run -p 8501:8501 \
+  -e GEMINI_API_KEY=your-key-here \
+  -v rag_tutor_data:/data \
+  rag-tutor
+```
+
+| Aspect | Detail |
+|--------|--------|
+| Image size | ~1.3 GB (core deps; no torch) |
+| Config | All settings via env vars (`LLM_PROVIDER`, `CHUNKING_STRATEGY`, …) |
+| Data path | `/data/chroma_db` and `/data/study_materials` inside the container |
+| Health check | `GET /_stcore/health` returns 200 when ready |
+| Hybrid extras | To enable BGE-M3 / reranker, add `RUN pip install -e ".[hybrid]"` to the Dockerfile (image grows to ~3–5 GB) |
+
+---
+
 ## Running the Test Suite
 
-The project includes unit and integration tests covering hashing, legacy registry migrations, acronym expansions, prompt construction, vector filtering, **semantic chunking**, **chat history formatting**, **query disambiguation**, **feedback persistence**, and **multi-provider LLM abstraction**.
+The project includes unit and integration tests covering hashing, legacy registry migrations, acronym expansions, prompt construction, vector filtering, **semantic chunking**, **chat history formatting**, **query disambiguation**, **feedback persistence**, **multi-provider LLM abstraction**, **conversation persistence**, **quiz/flashcard parsing**, **PDF reader rendering**, **streaming/Stop**, and **retrieval-quality metrics**.
 
 To run the test suite:
 ```bash
 PYTHONPATH=. ./venv/bin/pytest
 ```
+
+CI runs the suite on Python 3.11 and 3.12 for every push and pull request (see `.github/workflows/ci.yml`).
+
+---
+
+## Evaluating Retrieval Quality
+
+A built-in eval harness measures **retrieval quality** (Hit Rate, MRR,
+Precision@k, Recall@k) against a ground-truth dataset. It uses the live
+retrieval pipeline, runs offline, and costs no LLM tokens.
+
+```bash
+# Evaluate the default subject at k=4 (uses a built-in starter dataset)
+python -m rag_tutor eval --subject "Operating System"
+
+# Use your own curated dataset, machine-readable JSON output
+python -m rag_tutor eval --dataset my_eval.json --k 6 --json
+```
+
+Example output:
+```
+  Retrieval Evaluation — subject: Operating System (k=4)
+
+  ┌─────────────────┬────────────┐
+  │ Hit Rate        │     66.67% │
+  ├─────────────────┼────────────┤
+  │ MRR             │     0.6667 │
+  │ Precision@4     │     54.17% │
+  │ Recall@4        │     66.67% │
+  │ Items evaluated │          6 │
+  └─────────────────┴────────────┘
+```
+
+A dataset is a JSON file of `{query, subject, relevant_sources | expected_keywords}` — see `eval/dataset.example.json`. Curate entries matching your own PDFs for the most meaningful scores.
 
 ---
 
@@ -160,7 +227,7 @@ PYTHONPATH=. ./venv/bin/pytest
 - **Chunk-Level Deduplication**: LlamaIndex-based ingestion includes hash-based dedup so re-ingesting the same content is a no-op.
 - **Acronym Query Expansion**: Automatically expands common technical abbreviations (e.g. PCB to Process Control Block) dynamically before searching.
 - **Conversational Memory**: The LLM prompt includes the last 3 conversation turns, and follow-up queries like *"Explain more"* are automatically disambiguated using prior assistant context.
-- **Transient Error Retry & Model Fallback**: Automatically retries on rate limits (429/503) and falls back to a secondary model (`gemini-1.5-flash`) if high demand persists.
+- **Transient Error Retry & Model Fallback**: Automatically retries on rate limits (429/503) and falls back to a secondary model (`gemini-2.5-flash-lite`) if high demand persists.
 - **Unified Citations**: Answers citation pages cleanly referencing PDFs, with detailed excerpts rendered in premium dark UI cards.
 - **Incremental Ingestion**: Hashes files, skipping duplicates and cleaning up old chunks when a document changes.
 - **Feedback Tracking**: Rate each assistant response with 👍 / 👎. Feedback is persisted locally to `chroma_db/feedback.jsonl` for future evaluation and iteration.

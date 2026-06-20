@@ -1,0 +1,107 @@
+{
+  "_comment": "Ground-truth dataset for `python -m rag_tutor eval`. Each item has a 'query', and EITHER 'relevant_sources' (exact source/page pairs known to answer it) OR 'expected_keywords' (used as a relevance fallback when retrieved text contains them). 'subject' must match an ingested subject. Replace these generic examples with curated entries for your own PDFs for meaningful scores.",
+  "items": [
+    {
+      "query": "What are the four necessary conditions for a deadlock?",
+      "subject": "Operating System",
+      "relevant_sources": [],
+      "expected_keywords": ["mutual exclusion", "hold and wait", "no preemption", "circular wait"]
+    },
+    {
+      "query": "Explain the difference between paging and segmentation.",
+      "subject": "Operating System",
+      "relevant_sources": [],
+      "expected_keywords": ["paging", "segmentation", "page table", "fixed size"]
+    },
+    {
+      "query": "What is a Process Control Block (PCB)?",
+      "subject": "Operating System",
+      "relevant_sources": [],
+      "expected_keywords": ["process control block", "pcb", "process state", "program counter"]
+    },
+    {
+      "query": "Describe the FCFS and SJF CPU scheduling algorithms.",
+      "subject": "Operating System",
+      "relevant_sources": [],
+      "expected_keywords": ["first come first served", "shortest job first", "scheduling", "preemptive"]
+    },
+    {
+      "query": "What is database normalization?",
+      "subject": "DatabaseManagementSystem",
+      "relevant_sources": [],
+      "expected_keywords": ["normalization", "normal form", "redundancy", "functional dependency"]
+    },
+    {
+      "query": "Explain the ACID properties.",
+      "subject": "DatabaseManagementSystem",
+      "relevant_sources": [],
+      "expected_keywords": ["atomicity", "consistency", "isolation", "durability"]
+    },
+    {
+      "query": "How does demand paging and page replacement work in virtual memory?",
+      "subject": "Operating System",
+      "relevant_sources": [],
+      "expected_keywords": ["demand paging", "page replacement", "virtual memory", "page fault"]
+    },
+    {
+      "query": "Explain the classical process synchronization problems like producer-consumer.",
+      "subject": "Operating System",
+      "relevant_sources": [],
+      "expected_keywords": ["synchronization", "producer", "consumer", "semaphore", "critical section"]
+    },
+    {
+      "query": "What are the file allocation methods in the file system?",
+      "subject": "Operating System",
+      "relevant_sources": [],
+      "expected_keywords": ["file allocation", "contiguous", "linked", "indexed", "file system"]
+    },
+    {
+      "query": "How does access control and authentication work in operating system security?",
+      "subject": "Operating System",
+      "relevant_sources": [],
+      "expected_keywords": ["access control", "authentication", "security", "protection", "password"]
+    },
+    {
+      "query": "What is query optimization and how does a query optimizer work?",
+      "subject": "DatabaseManagementSystem",
+      "relevant_sources": [],
+      "expected_keywords": ["query optimization", "optimizer", "execution plan", "cost"]
+    },
+    {
+      "query": "Explain two-phase locking and concurrency control protocols.",
+      "subject": "DatabaseManagementSystem",
+      "relevant_sources": [],
+      "expected_keywords": ["two-phase locking", "2pl", "concurrency control", "lock", "serializable"]
+    },
+    {
+      "query": "What is a distributed database and how is data fragmentation done?",
+      "subject": "DatabaseManagementSystem",
+      "relevant_sources": [],
+      "expected_keywords": ["distributed database", "fragmentation", "horizontal", "vertical", "replication"]
+    },
+    {
+      "query": "Explain inner and outer joins in SQL with examples.",
+      "subject": "DatabaseManagementSystem",
+      "relevant_sources": [],
+      "expected_keywords": ["join", "inner", "outer", "sql", "foreign key"]
+    },
+    {
+      "query": "What is an object-oriented database and how does it differ from a relational database?",
+      "subject": "DatabaseManagementSystem",
+      "relevant_sources": [],
+      "expected_keywords": ["object-oriented", "oodbms", "relational", "class", "inheritance"]
+    },
+    {
+      "query": "How does exception handling with try-catch-finally work in Java?",
+      "subject": "JAVA",
+      "relevant_sources": [],
+      "expected_keywords": ["exception", "try", "catch", "finally", "throw"]
+    },
+    {
+      "query": "Explain the Java Collections Framework and the List, Set, Map interfaces.",
+      "subject": "JAVA",
+      "relevant_sources": [],
+      "expected_keywords": ["collection", "list", "set", "map", "arraylist"]
+    }
+  ]
+}
