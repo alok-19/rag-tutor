@@ -12,6 +12,7 @@ STUDY_DIR = Path(os.getenv("STUDY_MATERIALS_DIR", "study_materials"))
 # Chroma DB Settings
 COLLECTION_NAME = os.getenv("CHROMA_COLLECTION_NAME", "study_buddy_notes")
 REGISTRY_FILE = DB_PATH / "ingestion_registry.json"
+CONVERSATIONS_DIR = DB_PATH / "conversations"
 
 # Chunking strategy: "recursive" (default, langchain) | "llama_index"
 CHUNKING_STRATEGY = os.getenv("CHUNKING_STRATEGY", "recursive").lower().strip()
